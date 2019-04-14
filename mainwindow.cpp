@@ -60,6 +60,7 @@
 MainWindow::MainWindow()
 {
     addressWidget = new AddressWidget;
+    textEdit = new QTextEdit;
     setCentralWidget(addressWidget);
     createMenus();
     setWindowTitle(tr("Twoi klieci"));
