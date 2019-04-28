@@ -74,7 +74,6 @@ private slots:
 
 protected:
     void closeEvent(QCloseEvent *event) override;
-    void showEvent(QShowEvent *event) override;
 
 public:
     void setModified(bool bModified);
@@ -83,9 +82,6 @@ public:
 private:
     void createMenus();
     void createDockWindows();
-
-    /* potrzebna aby wyswietlic okno logowania przy pierwszym event */
-    int event_count;
 
     /* informuje czy dane zostaly zmodyfikowane */
     bool data_modified;

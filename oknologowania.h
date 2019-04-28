@@ -2,6 +2,7 @@
 #define OKNOLOGOWANIA_H
 
 #include <QDialog>
+#include "mainwindow.h"
 
 namespace Ui {
 class OknoLogowania;
@@ -20,6 +21,7 @@ private slots:
 
 private:
     Ui::OknoLogowania *ui;
+    MainWindow mainWindow;
 };
 
 #endif // OKNOLOGOWANIA_H

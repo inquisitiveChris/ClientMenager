@@ -47,7 +47,7 @@
 ** $QT_END_LICENSE$
 **
 ****************************************************************************/
-#include "oknologowania.h"
+
 #include "mainwindow.h"
 #include <QAction>
 #include <QDialog>
@@ -59,16 +59,12 @@
 //! [0]
 MainWindow::MainWindow()
 {
-    event_count = 0;
-
-
     addressWidget = new AddressWidget;
     setModified(false);
     setCentralWidget(addressWidget);
     createMenus();
     setWindowTitle(tr("Twoi klienci"));
     createDockWindows();
-
 }
 //! [0]
 void MainWindow::setModified(bool bModified)
@@ -128,15 +124,17 @@ void MainWindow::createMenus()
 void MainWindow::openFile()
 {
     if(getModified()){
+        /* TODO: change to question and take appropriate action */
         QMessageBox::warning(this,"Uwaga", "wszystkie zmiany w pliku zostaną utracone");
     } else {
-    QString fileName = QFileDialog::getOpenFileName(this,
-            tr("Open Address Book"), "db",
-            tr("Address Book (*.abk);;All Files (*)"));
-    if (!fileName.isEmpty()) {
-        addressWidget->readFromFile(fileName);
-        setModified(false);
-    }
+        QString fileName =
+                QFileDialog::getOpenFileName(this,
+                                             tr("Open Address Book"), "db",
+                                             tr("Address Book (*.abk);;All Files (*)"));
+        if (!fileName.isEmpty()) {
+            addressWidget->readFromFile(fileName);
+            setModified(false);
+        }
     }
 }
 //! [2]
@@ -187,31 +185,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 }
 
 //! [5]
-
-void MainWindow::showEvent(QShowEvent *event)
-{
-    static int aboutClose;
-    event_count ++;
-
-    /* show login window only on first Show event */
-    if(event_count == 1){
-
-        int ret;
-        OknoLogowania *lw =new OknoLogowania;
-        lw->setModal(true);
-        ret = lw->exec();
-        delete lw;
-
-        if(ret != QDialog::Accepted) {
-            aboutClose = 1;
-            this->close();
-        }
-    } else { /* gdy kolejny event sprawdz czy flaga wychodzenia jest aktywna */
-        if (aboutClose) {
-            this->close();
-        }
-    }
-}
 
 //!
 void MainWindow::insertCustomer(const QString &customer)

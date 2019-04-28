@@ -48,9 +48,7 @@
 **
 ****************************************************************************/
 
-#include "mainwindow.h"
 #include "oknologowania.h"
-
 #include <QApplication>
 
 //! [0]
