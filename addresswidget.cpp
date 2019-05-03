@@ -50,8 +50,20 @@
 
 #include "adddialog.h"
 #include "addresswidget.h"
+#include "mainwindow.h"
 
 #include <QtWidgets>
+
+MainWindow * getMainWindow(){
+
+   QWidget* m = nullptr;
+   foreach(QWidget *widget, qApp->topLevelWidgets())
+   if(widget->inherits("QMainWindow")) {
+       m = widget;
+       return reinterpret_cast<MainWindow*> (m);
+   }
+   return nullptr;
+}
 
 //! [0]
 AddressWidget::AddressWidget(QWidget *parent)
@@ -82,7 +94,10 @@ void AddressWidget::showAddEntryDialog()
         QString nip = aDialog.nipText->text();
         QString regon = aDialog.regonText->text();
 
-        addEntry(name, pesel,  address,  telefon,  email, nip, regon);
+        if(name.length() > 0) {
+            addEntry(name, pesel,  address,  telefon,  email, nip, regon);
+
+        }
     }
 }
 //! [2]
@@ -107,6 +122,10 @@ void AddressWidget::addEntry(QString name, QString pesel, QString address, QStri
         table->setData(index, nip, Qt::EditRole);
         index = table->index(0, 6, QModelIndex());
         table->setData(index, regon, Qt::EditRole);
+        removeTab(indexOf(newAddressTab));
+        /* poinformuj MainWindow że dane zostały zmienione */
+        getMainWindow()->setModified(true);
+
     } else {
         QMessageBox::information(this, tr("Duplicate Name"),
             tr("The name \"%1\" already exists.").arg(name));
@@ -177,35 +196,48 @@ void AddressWidget::editEntry()
     aDialog.regonText->setText(regon);
 
     if (aDialog.exec()) {
+
+        bool clientModified = false;
+
         QString newPesel = aDialog.peselText->text();
         if (newPesel != pesel) {
+            clientModified = true;
             QModelIndex index = table->index(row, 1, QModelIndex());
             table->setData(index, newPesel, Qt::EditRole);
         }
         QString newAddress = aDialog.addressText->toPlainText();
         if (newAddress != address) {
+            clientModified = true;
             QModelIndex index = table->index(row, 2, QModelIndex());
             table->setData(index, newAddress, Qt::EditRole);
         }
         QString newTelefon = aDialog.telefonText->text();
         if (newTelefon != telefon) {
+            clientModified = true;
             QModelIndex index = table->index(row, 3, QModelIndex());
             table->setData(index, newTelefon, Qt::EditRole);
         }
         QString newEmail = aDialog.emailText->text();
         if (newEmail != email) {
+            clientModified = true;
             QModelIndex index = table->index(row, 4, QModelIndex());
             table->setData(index, newEmail, Qt::EditRole);
         }
         QString newNip = aDialog.nipText->text();
         if (newNip != nip) {
+            clientModified = true;
             QModelIndex index = table->index(row, 5, QModelIndex());
             table->setData(index, newNip, Qt::EditRole);
         }
         QString newRegon = aDialog.regonText->text();
         if (newRegon != regon) {
+            clientModified = true;
             QModelIndex index = table->index(row, 6, QModelIndex());
             table->setData(index, newRegon, Qt::EditRole);
+        }
+        if(clientModified == true) {
+            /* poinformuj MainWindow że dane zostały zmienione */
+            getMainWindow()->setModified(true);
         }
     }
 }
@@ -224,6 +256,15 @@ void AddressWidget::removeEntry()
         int row = proxy->mapToSource(index).row();
         table->removeRows(row, 1, QModelIndex());
     }
+ update
+   
+    /* poinformuj MainWindow że dane zostały zmienione */
+    getMainWindow()->setModified(true);
+
+    if (table->rowCount(QModelIndex()) == 0) {
+        insertTab(0, newAddressTab, "Baza klientów");
+    }
+
 }
 //! [5]
 
@@ -305,6 +346,7 @@ void AddressWidget::writeToFile(const QString &fileName)
 
     QDataStream out(&file);
     out << table->getContacts();
+
 }
 //! [6]
 //! [8]
@@ -321,6 +363,8 @@ void AddressWidget::autoOpenFile()
         QList<Contact> contacts;
         QDataStream in(&file);
         in >> contacts;
+        /* poinformuj MainWindow że dane zostały zmienione */
+        getMainWindow()->setModified(true);
 
         if (contacts.isEmpty()) {
             QMessageBox::information(this, tr("Brak kontaktów w pliku"),

@@ -49,8 +49,8 @@
 ****************************************************************************/
 
 #include "mainwindow.h"
-
 #include <QAction>
+#include <QDialog>
 #include <QFileDialog>
 #include <QSaveFile>
 #include <QMenuBar>
@@ -72,9 +72,18 @@ MainWindow::MainWindow()
     centralArea->addSubWindow(policyWidget);
     createMenus();
     setWindowTitle(tr("Polisman 1.0"));
+
 }
 //! [0]
+void MainWindow::setModified(bool bModified)
+{
+    data_modified = bModified;
+}
 
+bool MainWindow::getModified()
+{
+    return data_modified;
+}
 //! [1a]
 void MainWindow::createMenus()
 {
@@ -142,11 +151,19 @@ void MainWindow::createMenus()
 //! [2]
 void MainWindow::openFile()
 {
-    QString fileName = QFileDialog::getOpenFileName(this,
-            tr("Open Address Book"), "db",
-            tr("Address Book (*.abk);;All Files (*)"));
-    if (!fileName.isEmpty())
-        addressWidget->readFromFile(fileName);
+    if(getModified()){
+        /* TODO: change to question and take appropriate action */
+        QMessageBox::warning(this,"Uwaga", "wszystkie zmiany w pliku zostaną utracone");
+    } else {
+        QString fileName =
+                QFileDialog::getOpenFileName(this,
+                                             tr("Open Address Book"), "db",
+                                             tr("Address Book (*.abk);;All Files (*)"));
+        if (!fileName.isEmpty()) {
+            addressWidget->readFromFile(fileName);
+            setModified(false);
+        }
+    }
 }
 //! [2]
 
@@ -156,8 +173,10 @@ void MainWindow::saveFile()
     QString fileName = QFileDialog::getSaveFileName(this,
            tr("Save Address Book"), "db",
            tr("Address Book (*.abk);;All Files (*)"));
-    if (!fileName.isEmpty())
+    if (!fileName.isEmpty()) {
         addressWidget->writeToFile(fileName);
+        setModified(false);
+    }
 }
 //! [3]
 
@@ -184,15 +203,68 @@ void MainWindow::updateActions(const QItemSelection &selection)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    QMessageBox::information(this, "", "Czy chcesz zapisać zmiany?");
-    QString fileName = QFileDialog::getSaveFileName(this,
-           tr("Save Address Book"), "db.abk",
-           tr("Address Book (*.abk);;All Files (*)"));
-    if (!fileName.isEmpty())
-        addressWidget->writeToFile(fileName);
-            QMainWindow::closeEvent(event);
+    if(getModified()) {
+        int answer = QMessageBox::question(this, "Dane klientów zostały zmienione", "Czy chcesz zapisać zmiany?");
+        if (answer == QMessageBox::Yes) {
+            QString fileName = QFileDialog::getSaveFileName(this,
+                   tr("Save Address Book"), "db.abk",
+                   tr("Address Book (*.abk);;All Files (*)"));
+            if (!fileName.isEmpty())
+                addressWidget->writeToFile(fileName);
+        }
+    }
+    QMainWindow::closeEvent(event);
 }
 
 //! [5]
+
+//!
+void MainWindow::insertCustomer(const QString &customer)
+{ 
+    if (customer.isEmpty())
+        return;
+
+    QStringList customerList = customer.split(", ");
+    QTextDocument *document = textEdit->document();
+    QTextCursor cursor = document->find("NAME");
+    if (!cursor.isNull()) {
+        cursor.beginEditBlock();
+        cursor.insertText(customerList.at(0));
+        QTextCursor oldcursor = cursor;
+        cursor = document->find("ADDRESS");
+        if (!cursor.isNull()) {
+            for (int i = 1; i < customerList.size(); ++i) {
+                cursor.insertBlock();
+                cursor.insertText(customerList.at(i));
+            }
+            cursor.endEditBlock();
+        }
+        else
+            oldcursor.endEditBlock();
+    }
+}
+//!
+//! [6]
+void MainWindow::createDockWindows()
+{
+    QDockWidget *dock = new QDockWidget(tr("Polisy"), this);
+    dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    customerList = new QListWidget(dock);
+    customerList->addItems(QStringList()
+            << "John Doe, Harmony Enterprises, 12 Lakeside, Ambleton"
+            << "Jane Doe, Memorabilia, 23 Watersedge, Beaton"
+            << "Tammy Shea, Tiblanka, 38 Sea Views, Carlton"
+            << "Tim Sheen, Caraba Gifts, 48 Ocean Way, Deal"
+            << "Sol Harvey, Chicos Coffee, 53 New Springs, Eccleston"
+            << "Sally Hobart, Tiroli Tea, 67 Long River, Fedula");
+    dock->setWidget(customerList);
+    addDockWidget(Qt::RightDockWidgetArea, dock);
+    //viewMenu->addAction(dock->toggleViewAction());
+
+    connect(customerList, &QListWidget::currentTextChanged,
+            this, &MainWindow::insertCustomer);
+
+}
+//! [6]
 
 

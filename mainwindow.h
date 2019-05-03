@@ -57,6 +57,7 @@
 #include <QMdiArea>
 #include <QListWidget>
 #include <QTextEdit>
+#include <QShowEvent>
 
 //! [0]
 class MainWindow : public QMainWindow
@@ -74,10 +75,17 @@ private slots:
 protected:
     void closeEvent(QCloseEvent *event) override;
 
+public:
+    void setModified(bool bModified);
+    bool getModified();
+
 private:
     void createMenus();
 
+
     QMdiArea *centralArea;
+    /* informuje czy dane zostaly zmodyfikowane */
+    bool data_modified;
     AddressWidget *addressWidget;
     PolicyWidget *policyWidget;
     QListWidget *customerList;
