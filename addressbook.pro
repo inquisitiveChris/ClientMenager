@@ -2,13 +2,7 @@
 QT	+= widgets
 requires(qtConfig(listview))
 
-SOURCES   = adddialog.cpp \
-            addresswidget.cpp \
-            main.cpp \
-            mainwindow.cpp \
-            newaddresstab.cpp \
-            tablemodel.cpp \
-            policywidget.cpp \
+SOURCES   =
     adddialog.cpp \
     addresswidget.cpp \
     cypher.cpp \
@@ -20,13 +14,8 @@ SOURCES   = adddialog.cpp \
     simplecrypt.cpp \
     tablemodel.cpp
 
-HEADERS   = adddialog.h \
-            addresswidget.h \
-            mainwindow.h \
-            newaddresstab.h \
-            tablemodel.h \
-            policywidget.h \
-             adddialog.h \
+HEADERS   =
+    adddialog.h \
     addresswidget.h \
     cypher.h \
     mainwindow.h \

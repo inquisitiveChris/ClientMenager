@@ -54,17 +54,25 @@
 #include <QFileDialog>
 #include <QSaveFile>
 #include <QMenuBar>
+#include <QMdiArea>
 #include <QtWidgets>
 
 //! [0]
 MainWindow::MainWindow()
 {
+    centralArea = new QMdiArea;
     addressWidget = new AddressWidget;
-    setModified(false);
-    setCentralWidget(addressWidget);
+    policyWidget = new PolicyWidget;
+    textEdit = new QTextEdit;
+    centralArea->setViewMode(QMdiArea::TabbedView);
+    setCentralWidget(centralArea);
+    addressWidget->setWindowTitle("Klienci");
+    policyWidget->setWindowTitle("Polisy");
+    centralArea->addSubWindow(addressWidget);
+    centralArea->addSubWindow(policyWidget);
     createMenus();
-    setWindowTitle(tr("Twoi klienci"));
-    createDockWindows();
+    setWindowTitle(tr("Polisman 1.0"));
+
 }
 //! [0]
 void MainWindow::setModified(bool bModified)
@@ -115,7 +123,27 @@ void MainWindow::createMenus()
     toolMenu->addAction(removeAct);
     connect(removeAct, &QAction::triggered, addressWidget, &AddressWidget::removeEntry);
 
+    toolMenu = menuBar()->addMenu(tr("&Polisy"));
+
+    addPolicyAct = new QAction(tr("&Dodaj polise..."), this);
+    toolMenu->addAction(addPolicyAct);
+    connect(addPolicyAct, &QAction::triggered, policyWidget, &PolicyWidget::showAddEntryDialog);
+
+    editPolicyAct = new QAction(tr("&Edytuj polise..."), this);
+    editPolicyAct->setEnabled(false);
+    toolMenu->addAction(editPolicyAct);
+    connect(editPolicyAct, &QAction::triggered, policyWidget, &PolicyWidget::editEntry);
+
+    toolMenu->addSeparator();
+
+    removePolicyAct = new QAction(tr("&Usuń polise"), this);
+    removePolicyAct->setEnabled(false);
+    toolMenu->addAction(removePolicyAct);
+    connect(removePolicyAct, &QAction::triggered, policyWidget, &PolicyWidget::removeEntry);
+
     connect(addressWidget, &AddressWidget::selectionChanged,
+        this, &MainWindow::updateActions);
+    connect(policyWidget, &PolicyWidget::selectionChanged,
         this, &MainWindow::updateActions);
 }
 //! [1b]
@@ -160,9 +188,13 @@ void MainWindow::updateActions(const QItemSelection &selection)
     if (!indexes.isEmpty()) {
         removeAct->setEnabled(true);
         editAct->setEnabled(true);
+        removePolicyAct->setEnabled(true);
+        editPolicyAct->setEnabled(true);
     } else {
         removeAct->setEnabled(false);
         editAct->setEnabled(false);
+        removePolicyAct->setEnabled(false);
+        editPolicyAct->setEnabled(false);
     }
 }
 //! [4]

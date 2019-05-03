@@ -129,7 +129,7 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
                 return tr("Telefon");
 
             case 4:
-                return tr("Email");
+                return tr("E-mail");
 
             case 5:
                 return tr("NIP");
