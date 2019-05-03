@@ -53,6 +53,7 @@
 
 #include <QAbstractTableModel>
 #include <QList>
+#include <cypher.h>
 
 //! [0]
 
@@ -68,18 +69,38 @@ struct Contact
 
     bool operator==(const Contact &other) const
     {
-        return name == other.name && pesel == other.pesel && address == other.address && telefon == other.telefon && nip == other.nip && regon == other.regon;
+        return name == other.name && pesel == other.pesel
+                && address == other.address && telefon == other.telefon
+                && nip == other.nip && regon == other.regon;
     }
 };
 
 inline QDataStream &operator<<(QDataStream &stream, const Contact &contact)
 {
-    return stream << contact.name << contact.pesel << contact.address << contact.telefon << contact.email << contact.nip << contact.regon;
+    return stream << enc(contact.name) << enc(contact.pesel)
+                  << enc(contact.address) << enc(contact.telefon)
+                  << enc(contact.email) << enc(contact.nip)
+                  << enc(contact.regon);
 }
 
 inline QDataStream &operator>>(QDataStream &stream, Contact &contact)
 {
-    return stream >> contact.name >> contact.pesel >> contact.address >> contact.telefon >> contact.email >> contact.nip >> contact.regon;
+    /* encrypted contact */
+    struct Contact econtact;
+
+    QDataStream &st =
+    stream >> econtact.name >> econtact.pesel >> econtact.address
+           >> econtact.telefon >> econtact.email >> econtact.nip
+           >> econtact.regon;
+    contact.name = dec( econtact.name);
+    contact.pesel = dec( econtact.pesel);
+    contact.address = dec( econtact.address);
+    contact.telefon = dec( econtact.telefon);
+    contact.email = dec( econtact.email);
+    contact.nip = dec( econtact.nip);
+    contact.regon = dec( econtact.regon);
+
+    return st;
 }
 
 class TableModel : public QAbstractTableModel

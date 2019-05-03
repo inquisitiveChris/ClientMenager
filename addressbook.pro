@@ -1,4 +1,5 @@
-QT += widgets
+
+QT	+= widgets
 requires(qtConfig(listview))
 
 SOURCES   = adddialog.cpp \
@@ -8,14 +9,15 @@ SOURCES   = adddialog.cpp \
             newaddresstab.cpp \
             tablemodel.cpp \
             policywidget.cpp \
-    loginwindow.cpp
+      			loginwindow.cpp
+
 HEADERS   = adddialog.h \
             addresswidget.h \
             mainwindow.h \
             newaddresstab.h \
             tablemodel.h \
             policywidget.h \
-    loginwindow.h
+	        	loginwindow.h
 
 # install
 target.path = $$[QT_INSTALL_EXAMPLES]/widgets/itemviews/addressbook
