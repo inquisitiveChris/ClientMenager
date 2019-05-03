@@ -65,7 +65,7 @@ class NewAddressTab : public QWidget
     Q_OBJECT
 
 public:
-    NewAddressTab(QWidget *parent = 0);
+    NewAddressTab(QWidget *parent = nullptr);
 
 public slots:
     void addEntry();

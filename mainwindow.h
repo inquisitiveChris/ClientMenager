@@ -54,6 +54,7 @@
 #include "addresswidget.h"
 #include "policywidget.h"
 #include <QMainWindow>
+#include <QMdiArea>
 #include <QListWidget>
 #include <QTextEdit>
 
@@ -69,16 +70,16 @@ private slots:
     void updateActions(const QItemSelection &selection);
     void openFile();
     void saveFile();
-    void insertCustomer(const QString &customer);
 
 protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
     void createMenus();
-    void createDockWindows();
 
+    QMdiArea *centralArea;
     AddressWidget *addressWidget;
+    PolicyWidget *policyWidget;
     QListWidget *customerList;
     QMenu *fileMenu;
     QMenu *toolMenu;
@@ -88,6 +89,9 @@ private:
     QAction *addAct;
     QAction *editAct;
     QAction *removeAct;
+    QAction *addPolicyAct;
+    QAction *editPolicyAct;
+    QAction *removePolicyAct;
     QTextEdit *textEdit;
 };
 //! [0]
