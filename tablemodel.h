@@ -85,7 +85,7 @@ inline QDataStream &operator<<(QDataStream &stream, const Contact &contact)
 
 inline QDataStream &operator>>(QDataStream &stream, Contact &contact)
 {
-    /* encrypted contact */
+
     struct Contact econtact;
 
     QDataStream &st =

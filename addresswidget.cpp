@@ -256,7 +256,6 @@ void AddressWidget::removeEntry()
         int row = proxy->mapToSource(index).row();
         table->removeRows(row, 1, QModelIndex());
     }
- update
    
     /* poinformuj MainWindow że dane zostały zmienione */
     getMainWindow()->setModified(true);
