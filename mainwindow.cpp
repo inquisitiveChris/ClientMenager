@@ -47,10 +47,10 @@
 ** $QT_END_LICENSE$
 **
 ****************************************************************************/
-
+#include "oknologowania.h"
 #include "mainwindow.h"
-
 #include <QAction>
+#include <QDialog>
 #include <QFileDialog>
 #include <QSaveFile>
 #include <QMenuBar>
@@ -59,14 +59,27 @@
 //! [0]
 MainWindow::MainWindow()
 {
+    event_count = 0;
+
+
     addressWidget = new AddressWidget;
+    setModified(false);
     setCentralWidget(addressWidget);
     createMenus();
-    setWindowTitle(tr("Twoi klieci"));
+    setWindowTitle(tr("Twoi klienci"));
     createDockWindows();
+
 }
 //! [0]
+void MainWindow::setModified(bool bModified)
+{
+    data_modified = bModified;
+}
 
+bool MainWindow::getModified()
+{
+    return data_modified;
+}
 //! [1a]
 void MainWindow::createMenus()
 {
@@ -114,11 +127,17 @@ void MainWindow::createMenus()
 //! [2]
 void MainWindow::openFile()
 {
+    if(getModified()){
+        QMessageBox::warning(this,"Uwaga", "wszystkie zmiany w pliku zostaną utracone");
+    } else {
     QString fileName = QFileDialog::getOpenFileName(this,
             tr("Open Address Book"), "db",
             tr("Address Book (*.abk);;All Files (*)"));
-    if (!fileName.isEmpty())
+    if (!fileName.isEmpty()) {
         addressWidget->readFromFile(fileName);
+        setModified(false);
+    }
+    }
 }
 //! [2]
 
@@ -128,8 +147,10 @@ void MainWindow::saveFile()
     QString fileName = QFileDialog::getSaveFileName(this,
            tr("Save Address Book"), "db",
            tr("Address Book (*.abk);;All Files (*)"));
-    if (!fileName.isEmpty())
+    if (!fileName.isEmpty()) {
         addressWidget->writeToFile(fileName);
+        setModified(false);
+    }
 }
 //! [3]
 
@@ -152,21 +173,52 @@ void MainWindow::updateActions(const QItemSelection &selection)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    QMessageBox::information(this, "", "Czy chcesz zapisać zmiany?");
-    QString fileName = QFileDialog::getSaveFileName(this,
-           tr("Save Address Book"), "db.abk",
-           tr("Address Book (*.abk);;All Files (*)"));
-    if (!fileName.isEmpty())
-        addressWidget->writeToFile(fileName);
-            QMainWindow::closeEvent(event);
+    if(getModified()) {
+        int answer = QMessageBox::question(this, "Dane klientów zostały zmienione", "Czy chcesz zapisać zmiany?");
+        if (answer == QMessageBox::Yes) {
+            QString fileName = QFileDialog::getSaveFileName(this,
+                   tr("Save Address Book"), "db.abk",
+                   tr("Address Book (*.abk);;All Files (*)"));
+            if (!fileName.isEmpty())
+                addressWidget->writeToFile(fileName);
+        }
+    }
+    QMainWindow::closeEvent(event);
 }
 
 //! [5]
+
+void MainWindow::showEvent(QShowEvent *event)
+{
+    static int aboutClose;
+    event_count ++;
+
+    /* show login window only on first Show event */
+    if(event_count == 1){
+
+        int ret;
+        OknoLogowania *lw =new OknoLogowania;
+        lw->setModal(true);
+        ret = lw->exec();
+        delete lw;
+
+        if(ret != QDialog::Accepted) {
+            aboutClose = 1;
+            this->close();
+        }
+    } else { /* gdy kolejny event sprawdz czy flaga wychodzenia jest aktywna */
+        if (aboutClose) {
+            this->close();
+        }
+    }
+}
+
 //!
 void MainWindow::insertCustomer(const QString &customer)
-{
+{ 
     if (customer.isEmpty())
         return;
+
     QStringList customerList = customer.split(", ");
     QTextDocument *document = textEdit->document();
     QTextCursor cursor = document->find("NAME");

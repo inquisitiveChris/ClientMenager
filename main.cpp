@@ -49,6 +49,7 @@
 ****************************************************************************/
 
 #include "mainwindow.h"
+#include "oknologowania.h"
 
 #include <QApplication>
 
@@ -56,8 +57,8 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    MainWindow mw;
-    mw.showMaximized();
+    OknoLogowania ol;
+    ol.show();
     return app.exec();
 }
 //! [0]
