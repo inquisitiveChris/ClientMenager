@@ -54,17 +54,24 @@
 #include <QFileDialog>
 #include <QSaveFile>
 #include <QMenuBar>
+#include <QMdiArea>
 #include <QtWidgets>
 
 //! [0]
 MainWindow::MainWindow()
 {
+    centralArea = new QMdiArea;
     addressWidget = new AddressWidget;
+    policyWidget = new PolicyWidget;
     textEdit = new QTextEdit;
-    setCentralWidget(addressWidget);
+    centralArea->setViewMode(QMdiArea::TabbedView);
+    setCentralWidget(centralArea);
+    addressWidget->setWindowTitle("Klienci");
+    policyWidget->setWindowTitle("Polisy");
+    centralArea->addSubWindow(addressWidget);
+    centralArea->addSubWindow(policyWidget);
     createMenus();
-    setWindowTitle(tr("Twoi klieci"));
-    createDockWindows();
+    setWindowTitle(tr("Polisman 1.0"));
 }
 //! [0]
 
@@ -107,7 +114,27 @@ void MainWindow::createMenus()
     toolMenu->addAction(removeAct);
     connect(removeAct, &QAction::triggered, addressWidget, &AddressWidget::removeEntry);
 
+    toolMenu = menuBar()->addMenu(tr("&Polisy"));
+
+    addPolicyAct = new QAction(tr("&Dodaj polise..."), this);
+    toolMenu->addAction(addPolicyAct);
+    connect(addPolicyAct, &QAction::triggered, policyWidget, &PolicyWidget::showAddEntryDialog);
+
+    editPolicyAct = new QAction(tr("&Edytuj polise..."), this);
+    editPolicyAct->setEnabled(false);
+    toolMenu->addAction(editPolicyAct);
+    connect(editPolicyAct, &QAction::triggered, policyWidget, &PolicyWidget::editEntry);
+
+    toolMenu->addSeparator();
+
+    removePolicyAct = new QAction(tr("&Usuń polise"), this);
+    removePolicyAct->setEnabled(false);
+    toolMenu->addAction(removePolicyAct);
+    connect(removePolicyAct, &QAction::triggered, policyWidget, &PolicyWidget::removeEntry);
+
     connect(addressWidget, &AddressWidget::selectionChanged,
+        this, &MainWindow::updateActions);
+    connect(policyWidget, &PolicyWidget::selectionChanged,
         this, &MainWindow::updateActions);
 }
 //! [1b]
@@ -142,9 +169,13 @@ void MainWindow::updateActions(const QItemSelection &selection)
     if (!indexes.isEmpty()) {
         removeAct->setEnabled(true);
         editAct->setEnabled(true);
+        removePolicyAct->setEnabled(true);
+        editPolicyAct->setEnabled(true);
     } else {
         removeAct->setEnabled(false);
         editAct->setEnabled(false);
+        removePolicyAct->setEnabled(false);
+        editPolicyAct->setEnabled(false);
     }
 }
 //! [4]
@@ -163,52 +194,5 @@ void MainWindow::closeEvent(QCloseEvent *event)
 }
 
 //! [5]
-//!
-void MainWindow::insertCustomer(const QString &customer)
-{
-    if (customer.isEmpty())
-        return;
-    QStringList customerList = customer.split(", ");
-    QTextDocument *document = textEdit->document();
-    QTextCursor cursor = document->find("NAME");
-    if (!cursor.isNull()) {
-        cursor.beginEditBlock();
-        cursor.insertText(customerList.at(0));
-        QTextCursor oldcursor = cursor;
-        cursor = document->find("ADDRESS");
-        if (!cursor.isNull()) {
-            for (int i = 1; i < customerList.size(); ++i) {
-                cursor.insertBlock();
-                cursor.insertText(customerList.at(i));
-            }
-            cursor.endEditBlock();
-        }
-        else
-            oldcursor.endEditBlock();
-    }
-}
-//!
-//! [6]
-void MainWindow::createDockWindows()
-{
-    QDockWidget *dock = new QDockWidget(tr("Polisy"), this);
-    dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    customerList = new QListWidget(dock);
-    customerList->addItems(QStringList()
-            << "John Doe, Harmony Enterprises, 12 Lakeside, Ambleton"
-            << "Jane Doe, Memorabilia, 23 Watersedge, Beaton"
-            << "Tammy Shea, Tiblanka, 38 Sea Views, Carlton"
-            << "Tim Sheen, Caraba Gifts, 48 Ocean Way, Deal"
-            << "Sol Harvey, Chicos Coffee, 53 New Springs, Eccleston"
-            << "Sally Hobart, Tiroli Tea, 67 Long River, Fedula");
-    dock->setWidget(customerList);
-    addDockWidget(Qt::RightDockWidgetArea, dock);
-    //viewMenu->addAction(dock->toggleViewAction());
-
-    connect(customerList, &QListWidget::currentTextChanged,
-            this, &MainWindow::insertCustomer);
-
-}
-//! [6]
 
 

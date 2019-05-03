@@ -58,11 +58,7 @@ AddressWidget::AddressWidget(QWidget *parent)
     : QTabWidget(parent)
 {
     table = new TableModel(this);
-    newAddressTab = new NewAddressTab(this);
-    connect(newAddressTab, &NewAddressTab::sendDetails,
-        this, &AddressWidget::addEntry);
     auto* tabpointer = table;
-    addTab(newAddressTab, "Twoi klienci");
     setupTabs();
     autoOpenFile();
 
@@ -111,7 +107,6 @@ void AddressWidget::addEntry(QString name, QString pesel, QString address, QStri
         table->setData(index, nip, Qt::EditRole);
         index = table->index(0, 6, QModelIndex());
         table->setData(index, regon, Qt::EditRole);
-        removeTab(indexOf(newAddressTab));
     } else {
         QMessageBox::information(this, tr("Duplicate Name"),
             tr("The name \"%1\" already exists.").arg(name));
@@ -228,10 +223,6 @@ void AddressWidget::removeEntry()
     foreach (QModelIndex index, indexes) {
         int row = proxy->mapToSource(index).row();
         table->removeRows(row, 1, QModelIndex());
-    }
-
-    if (table->rowCount(QModelIndex()) == 0) {
-        insertTab(0, newAddressTab, "Baza klientów");
     }
 }
 //! [5]
