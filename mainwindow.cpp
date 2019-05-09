@@ -59,12 +59,19 @@
 //! [0]
 MainWindow::MainWindow()
 {
+    centralArea = new QMdiArea;
+    policyWidget = new PolicyWidget;
     addressWidget = new AddressWidget;
+    textEdit = new QTextEdit;
     setModified(false);
-    setCentralWidget(addressWidget);
+    centralArea->setViewMode(QMdiArea::TabbedView);
+    setCentralWidget(centralArea);
+    addressWidget->setWindowTitle("Klienci");
+    policyWidget->setWindowTitle("Polisy");
+    centralArea->addSubWindow(addressWidget);
+    centralArea->addSubWindow(policyWidget);
     createMenus();
-    setWindowTitle(tr("Twoi klienci"));
- //   createDockWindows();
+    setWindowTitle(tr("Polisman 1.0"));
 }
 //! [0]
 void MainWindow::setModified(bool bModified)
@@ -115,7 +122,27 @@ void MainWindow::createMenus()
     toolMenu->addAction(removeAct);
     connect(removeAct, &QAction::triggered, addressWidget, &AddressWidget::removeEntry);
 
+    toolMenu = menuBar()->addMenu(tr("&Polisy"));
+
+    addPolicyAct = new QAction(tr("&Dodaj polise..."), this);
+    toolMenu->addAction(addPolicyAct);
+    connect(addPolicyAct, &QAction::triggered, policyWidget, &PolicyWidget::showAddEntryDialog);
+
+    editPolicyAct = new QAction(tr("&Edytuj polise..."), this);
+    editPolicyAct->setEnabled(false);
+    toolMenu->addAction(editPolicyAct);
+    connect(editPolicyAct, &QAction::triggered, policyWidget, &PolicyWidget::editEntry);
+
+    toolMenu->addSeparator();
+
+    removePolicyAct = new QAction(tr("&Usuń polise"), this);
+    removePolicyAct->setEnabled(false);
+    toolMenu->addAction(removePolicyAct);
+    connect(removePolicyAct, &QAction::triggered, policyWidget, &PolicyWidget::removeEntry);
+
     connect(addressWidget, &AddressWidget::selectionChanged,
+        this, &MainWindow::updateActions);
+    connect(policyWidget, &PolicyWidget::selectionChanged,
         this, &MainWindow::updateActions);
 }
 //! [1b]
