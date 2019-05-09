@@ -37,7 +37,6 @@ target.path = $$[QT_INSTALL_EXAMPLES]/widgets/itemviews/addressbook
 INSTALLS += target
 
 DISTFILES += \
-    loginwindowUI.txt \
     addressbook.pro.user \
     LICENSE \
     addressbook.pro.user \
