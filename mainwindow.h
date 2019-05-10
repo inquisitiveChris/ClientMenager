@@ -66,6 +66,7 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow();
+    ~MainWindow() override;
 
 private slots:
     void updateActions(const QItemSelection &selection);

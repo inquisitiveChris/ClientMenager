@@ -73,6 +73,11 @@ MainWindow::MainWindow()
     createMenus();
     setWindowTitle(tr("Polisman 1.0"));
 }
+MainWindow::~MainWindow()
+{
+    delete addressWidget;
+}
+
 //! [0]
 void MainWindow::setModified(bool bModified)
 {
