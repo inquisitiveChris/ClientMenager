@@ -18,6 +18,9 @@ class PolicyWidget:public QTabWidget
 
 public:
     PolicyWidget(QWidget *parent = nullptr);
+    ~PolicyWidget();
+    void readFromFile(const QString &fileName);
+    void writeToFile(const QString &fileName);
 
 public slots:
     void showAddEntryDialog();

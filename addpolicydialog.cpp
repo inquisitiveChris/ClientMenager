@@ -44,5 +44,5 @@ AddPolicyDialog::AddPolicyDialog(QWidget *parent)
     connect(okButton, &QAbstractButton::clicked, this, &QDialog::accept);
     connect(cancelButton, &QAbstractButton::clicked, this, &QDialog::reject);
 
-    setWindowTitle(tr("Dodaj polise"));
+    setWindowTitle(tr("Dodaj polisę"));
 }

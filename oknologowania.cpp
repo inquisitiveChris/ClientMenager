@@ -19,10 +19,10 @@ void OknoLogowania::on_LoginButton_clicked()
     QString password = ui->lineEdit_password->text();
 
     if(username != "admin" || password != "admin") {
-        /*
-         * ui->lineEdit_username->setText("admin");
-         * ui->lineEdit_password->setText("admin");
-         */
+
+          ui->lineEdit_username->setText("admin");
+          ui->lineEdit_password->setText("admin");
+
         ui->label_info->setText("nieprawidłowa nazwa uzytkownika lub hasło");
     }
     else {

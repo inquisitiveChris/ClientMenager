@@ -129,18 +129,18 @@ void MainWindow::createMenus()
 
     toolMenu = menuBar()->addMenu(tr("&Polisy"));
 
-    addPolicyAct = new QAction(tr("&Dodaj polise..."), this);
+    addPolicyAct = new QAction(tr("&Dodaj polisę..."), this);
     toolMenu->addAction(addPolicyAct);
     connect(addPolicyAct, &QAction::triggered, policyWidget, &PolicyWidget::showAddEntryDialog);
 
-    editPolicyAct = new QAction(tr("&Edytuj polise..."), this);
+    editPolicyAct = new QAction(tr("&Edytuj polisę..."), this);
     editPolicyAct->setEnabled(false);
     toolMenu->addAction(editPolicyAct);
     connect(editPolicyAct, &QAction::triggered, policyWidget, &PolicyWidget::editEntry);
 
     toolMenu->addSeparator();
 
-    removePolicyAct = new QAction(tr("&Usuń polise"), this);
+    removePolicyAct = new QAction(tr("&Usuń polisę"), this);
     removePolicyAct->setEnabled(false);
     toolMenu->addAction(removePolicyAct);
     connect(removePolicyAct, &QAction::triggered, policyWidget, &PolicyWidget::removeEntry);
@@ -156,12 +156,20 @@ void MainWindow::createMenus()
 void MainWindow::openFile()
 {
     if(getModified()){
-        /* TODO: change to question and take appropriate action */
-        QMessageBox::warning(this,"Uwaga", "wszystkie zmiany w pliku zostaną utracone");
+        int reply = QMessageBox::question(this,"Uwaga", "wszystkie zmiany w pliku zostaną utracone");
+
+        if(reply == QMessageBox::Yes)
+        {
+            QString fileName =
+                    QFileDialog::getOpenFileName(this,
+                                                 tr("Open Address Book"), "db.abk",
+                                                 tr("Address Book (*.abk);;All Files (*)"));
+            setModified(false);
+        }
     } else {
         QString fileName =
                 QFileDialog::getOpenFileName(this,
-                                             tr("Open Address Book"), "db",
+                                             tr("Open Address Book"), "db.abk",
                                              tr("Address Book (*.abk);;All Files (*)"));
         if (!fileName.isEmpty()) {
             addressWidget->readFromFile(fileName);
@@ -174,9 +182,11 @@ void MainWindow::openFile()
 //! [3]
 void MainWindow::saveFile()
 {
+
     QString fileName = QFileDialog::getSaveFileName(this,
-           tr("Save Address Book"), "db",
+           tr("Save Address Book"), "db.abk",
            tr("Address Book (*.abk);;All Files (*)"));
+
     if (!fileName.isEmpty()) {
         addressWidget->writeToFile(fileName);
         setModified(false);
@@ -206,11 +216,14 @@ void MainWindow::closeEvent(QCloseEvent *event)
     if(getModified()) {
         int answer = QMessageBox::question(this, "Dane klientów zostały zmienione", "Czy chcesz zapisać zmiany?");
         if (answer == QMessageBox::Yes) {
-            QString fileName = QFileDialog::getSaveFileName(this,
+           /* QString fileName = QFileDialog::getSaveFileName(this,
                    tr("Save Address Book"), "db.abk",
                    tr("Address Book (*.abk);;All Files (*)"));
-            if (!fileName.isEmpty())
+            if (!fileName.isEmpty()){
                 addressWidget->writeToFile(fileName);
+            }*/
+            addressWidget->writeToFile("db.abk");
+            policyWidget->writeToFile("dbp.abk");
         }
     }
     QMainWindow::closeEvent(event);

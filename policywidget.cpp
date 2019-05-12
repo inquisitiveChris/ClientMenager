@@ -1,14 +1,25 @@
 #include "addpolicydialog.h"
 #include "policywidget.h"
+#include "mainwindow.h"
 
 #include <QtWidgets>
+
+extern MainWindow * getMainWindow();
 
 PolicyWidget::PolicyWidget(QWidget *parent)
     : QTabWidget (parent)
 {
     table = new PolicyTableModel(this);
     setupTabs();
+    readFromFile("dbp.abk");
+
 }
+
+PolicyWidget::~PolicyWidget()
+{
+    this->writeToFile("dbp.abk");
+}
+
 void PolicyWidget::showAddEntryDialog()
 {
     AddPolicyDialog aDialog;
@@ -19,7 +30,7 @@ void PolicyWidget::showAddEntryDialog()
         QString num = aDialog.numText->text();
         QString period = aDialog.periodText->text();
 
-
+    if(type.length() > 0)
         addEntry(type, company, num, period);
     }
 }
@@ -36,6 +47,8 @@ void PolicyWidget::addEntry(QString type, QString company, QString num, QString 
         table->setData(index, num, Qt::EditRole);
         index = table->index(0, 3, QModelIndex());
         table->setData(index, period, Qt::EditRole);
+        /* poinformuj MainWindow że dane zostały zmienione */
+        getMainWindow()->setModified(true);
     } else {
         QMessageBox::information(this, tr("Duplicate Number"),
             tr("The number \"%1\" already exists.").arg(num));
@@ -56,27 +69,27 @@ void PolicyWidget::editEntry()
 
     foreach (QModelIndex index, indexes) {
         row = proxy->mapToSource(index).row();
-        QModelIndex nameIndex = table->index(row, 0, QModelIndex());
-        QVariant varType = table->data(nameIndex, Qt::DisplayRole);
+        QModelIndex typeIndex = table->index(row, 0, QModelIndex());
+        QVariant varType = table->data(typeIndex, Qt::DisplayRole);
         type = varType.toString();
 
-        QModelIndex peselIndex = table->index(row, 1, QModelIndex());
-        QVariant varCompany = table->data(peselIndex, Qt::DisplayRole);
+        QModelIndex companyIndex = table->index(row, 1, QModelIndex());
+        QVariant varCompany = table->data(companyIndex, Qt::DisplayRole);
         company = varCompany.toString();
 
-        QModelIndex addressIndex = table->index(row, 2, QModelIndex());
-        QVariant varNum = table->data(addressIndex, Qt::DisplayRole);
+        QModelIndex numIndex = table->index(row, 2, QModelIndex());
+        QVariant varNum = table->data(numIndex, Qt::DisplayRole);
         num = varNum.toString();
 
-        QModelIndex telefonIndex = table->index(row, 3, QModelIndex());
-        QVariant varPeriod = table->data(telefonIndex, Qt::DisplayRole);
+        QModelIndex periodIndex = table->index(row, 3, QModelIndex());
+        QVariant varPeriod = table->data(periodIndex, Qt::DisplayRole);
         period = varPeriod.toString();
     }
 //! [4a]
 
 //! [4b]
     AddPolicyDialog aDialog;
-    aDialog.setWindowTitle(tr("Edytuj polise"));
+    aDialog.setWindowTitle(tr("Edytuj polisę"));
 
     aDialog.typeText->setText(type);
     aDialog.companyText->setText(company);
@@ -84,25 +97,34 @@ void PolicyWidget::editEntry()
     aDialog.periodText->setText(period);
 
     if (aDialog.exec()) {
+        bool policyModified = false;
         QString newType = aDialog.typeText->text();
         if (newType != type) {
+            policyModified = true;
             QModelIndex index = table->index(row, 1, QModelIndex());
             table->setData(index, newType, Qt::EditRole);
         }
         QString newCompany = aDialog.companyText->text();
         if (newCompany != company) {
+            policyModified = true;
             QModelIndex index = table->index(row, 1, QModelIndex());
             table->setData(index, newCompany, Qt::EditRole);
         }
         QString newNum = aDialog.numText->text();
         if (newNum != num) {
+            policyModified = true;
             QModelIndex index = table->index(row, 2, QModelIndex());
             table->setData(index, newNum, Qt::EditRole);
         }
         QString newPeriod = aDialog.periodText->text();
         if (newPeriod != period) {
+             policyModified = true;
             QModelIndex index = table->index(row, 3, QModelIndex());
             table->setData(index, newPeriod, Qt::EditRole);
+            if(policyModified == true) {
+               /* poinformuj MainWindow że dane zostały zmienione */
+               getMainWindow()->setModified(true);
+            }
         }
     }
 }
@@ -121,6 +143,8 @@ void PolicyWidget::removeEntry()
         int row = proxy->mapToSource(index).row();
         table->removeRows(row, 1, QModelIndex());
     }
+    /* poinformuj MainWindow że dane zostały zmienione */
+   getMainWindow()->setModified(true);
 }
 void PolicyWidget::setupTabs()
 {
@@ -157,4 +181,41 @@ void PolicyWidget::setupTabs()
 
         addTab(tableView, str);
     }
+}
+
+void PolicyWidget::readFromFile(const QString &fileName)
+{
+    QFile file(fileName);
+
+    if (!file.open(QIODevice::ReadOnly)) {
+        QMessageBox::information(this, tr("Nie można otworzyć pliku polis"),
+            file.errorString());
+        return;
+    }
+
+    QList<Policy> policies;
+    QDataStream in(&file);
+    in >> policies;
+
+    if (policies.isEmpty()) {
+        QMessageBox::information(this, tr("Brak polis w pliku"),
+                                 tr("Plik który próbujesz otworzyć nie zawiera polis."));
+    } else {
+        for (const auto &policy: qAsConst(policies))
+            addEntry(policy.type, policy.company, policy.num, policy.period);
+    }
+}
+
+void PolicyWidget::writeToFile(const QString &fileName)
+{
+    QFile file(fileName);
+
+    if (!file.open(QIODevice::WriteOnly)) {
+        QMessageBox::information(this, tr("Nie można otworzyć pliku polis"), file.errorString());
+        return;
+    }
+
+    QDataStream out(&file);
+    out << table->getPolicies();
+
 }

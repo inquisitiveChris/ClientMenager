@@ -10,7 +10,7 @@ NewPolicyTab::NewPolicyTab(QWidget *parent)
     descriptionLabel = new QLabel(tr("Baza polis jest pusta. "
                                       " Użyj przycisku poniżej aby to zmienić."));
 
-    addButton = new QPushButton(tr("Dodaj polise"));
+    addButton = new QPushButton(tr("Dodaj polisę"));
 
     connect(addButton, &QAbstractButton::clicked, this, &NewPolicyTab::addEntry);
 
