@@ -1,11 +1,14 @@
 #include "oknologowania.h"
 #include "ui_oknologowania.h"
+#include <QPixmap>
 
 OknoLogowania::OknoLogowania(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::OknoLogowania)
 {
     ui->setupUi(this);
+    QPixmap pix(":/resources/img/Logo.png");
+    ui->label_pic->setPixmap(pix.scaled(380,90));
 }
 
 OknoLogowania::~OknoLogowania()

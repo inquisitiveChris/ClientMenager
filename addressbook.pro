@@ -39,13 +39,9 @@ INSTALLS += target
 DISTFILES += \
     loginwindowUI.txt \
     addressbook.pro.user \
-    .gitattributes \
-    .gitignore \
     LICENSE \
     addressbook.pro.user \
     addressbook.pro.user.5f82d55 \
-    .gitattributes \
-    .gitignore \
     LICENSE
 
 SUBDIRS += \
@@ -54,3 +50,6 @@ SUBDIRS += \
 
 FORMS += \
     oknologowania.ui
+
+RESOURCES += \
+    resource.qrc
