@@ -133,10 +133,6 @@ void MainWindow::createMenus()
     toolMenu->addAction(addPolicyAct);
     connect(addPolicyAct, &QAction::triggered, policyWidget, &PolicyWidget::showAddEntryDialog);
 
-    editPolicyAct = new QAction(tr("&Edytuj polisę..."), this);    addPolicyAct = new QAction(tr("&Dodaj polise..."), this);
-    toolMenu->addAction(addPolicyAct);
-    connect(addPolicyAct, &QAction::triggered, policyWidget, &PolicyWidget::showAddEntryDialog);
-
     editPolicyAct = new QAction(tr("&Edytuj polise..."), this);
     editPolicyAct->setEnabled(false);
     toolMenu->addAction(editPolicyAct);
@@ -145,7 +141,6 @@ void MainWindow::createMenus()
     toolMenu->addSeparator();
 
     removePolicyAct = new QAction(tr("&Usuń polisę"), this);
-    removePolicyAct = new QAction(tr("&Usuń polise"), this);
     removePolicyAct->setEnabled(false);
     toolMenu->addAction(removePolicyAct);
     connect(removePolicyAct, &QAction::triggered, policyWidget, &PolicyWidget::removeEntry);
@@ -169,7 +164,10 @@ void MainWindow::openFile()
                     QFileDialog::getOpenFileName(this,
                                                  tr("Open Address Book"), "db.abk",
                                                  tr("Address Book (*.abk);;All Files (*)"));
-            setModified(false);
+            if (!fileName.isEmpty()) {
+                addressWidget->readFromFile(fileName);
+                setModified(false);
+            }
         }
     }else {
         QString fileName =
@@ -180,6 +178,9 @@ void MainWindow::openFile()
             addressWidget->readFromFile(fileName);
             setModified(false);
         }
+        /*temporary solution for policy file */
+        policyWidget->readFromFile("dbp.abk");
+
     }
 }
 //! [2]
@@ -191,10 +192,12 @@ void MainWindow::saveFile()
     QString fileName = QFileDialog::getSaveFileName(this,
            tr("Save Address Book"), "db.abk",
            tr("Address Book (*.abk);;All Files (*)"));
-
     if (!fileName.isEmpty()) {
         addressWidget->writeToFile(fileName);
-        setModified(false);
+    setModified(false);
+    /*temporary solution for policy file */
+    policyWidget->writeToFile("dbp.abk");
+        
     }
 }
 //! [3]
@@ -207,9 +210,13 @@ void MainWindow::updateActions(const QItemSelection &selection)
     if (!indexes.isEmpty()) {
         removeAct->setEnabled(true);
         editAct->setEnabled(true);
+        removePolicyAct->setEnabled(true);
+        editPolicyAct->setEnabled(true);
     } else {
         removeAct->setEnabled(false);
         editAct->setEnabled(false);
+        removePolicyAct->setEnabled(false);
+        editPolicyAct->setEnabled(false);
     }
 }
 //! [4]
@@ -221,19 +228,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
     if(getModified()) {
         int answer = QMessageBox::question(this, "Dane klientów zostały zmienione", "Czy chcesz zapisać zmiany?");
         if (answer == QMessageBox::Yes) {
-           /* QString fileName = QFileDialog::getSaveFileName(this,
-                   tr("Save Address Book"), "db.abk",
-                   tr("Address Book (*.abk);;All Files (*)"));
-            if (!fileName.isEmpty()){
-                addressWidget->writeToFile(fileName);
-            }*/
             addressWidget->writeToFile("db.abk");
             policyWidget->writeToFile("dbp.abk");
-            QString fileName = QFileDialog::getSaveFileName(this,
-                   tr("Save Address Book"), "db.abk",
-                   tr("Address Book (*.abk);;All Files (*)"));
-            if (!fileName.isEmpty())
-                addressWidget->writeToFile(fileName);
         }
     }
     QMainWindow::closeEvent(event);
