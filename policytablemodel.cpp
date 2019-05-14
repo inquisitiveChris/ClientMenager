@@ -20,7 +20,7 @@ int PolicyTableModel::rowCount(const QModelIndex &parent) const
 int PolicyTableModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return 4;
+    return 6;
 }
 QVariant PolicyTableModel::data(const QModelIndex &index, int role) const
 {
@@ -40,7 +40,9 @@ QVariant PolicyTableModel::data(const QModelIndex &index, int role) const
         else if (index.column() == 2)
             return policy.num;
         else if (index.column() == 3)
-            return policy.period;
+            return policy.period_from;
+        else if (index.column() == 4)
+            return policy.period_to;
     }
     return QVariant();
 }
@@ -61,7 +63,10 @@ QVariant PolicyTableModel::headerData(int section, Qt::Orientation orientation, 
             return tr("Nr polisy");
 
         case 3:
-            return tr("Okres ochrony");
+            return tr("Okres ochrony od");
+
+        case 4:
+            return tr("Okres ochrony do");
 
             default:
                 return QVariant();
@@ -86,7 +91,7 @@ bool PolicyTableModel::insertRows(int position, int rows, const QModelIndex &ind
     beginInsertRows(QModelIndex(), position, position + rows - 1);
 
     for (int row = 0; row < rows; ++row)
-       policies.insert(position, { QString(),QString(), QString(), QString() });
+       policies.insert(position, { QString(),QString(), QString(), QString(), QString() });
 
     endInsertRows();
     return true;
@@ -105,7 +110,9 @@ bool PolicyTableModel::setData(const QModelIndex &index, const QVariant &value, 
         else if (index.column() == 2)
             policy.num = value.toString();
         else if (index.column() == 3)
-            policy.period = value.toString();
+            policy.period_from = value.toString();
+        else if (index.column() == 4)
+            policy.period_to = value.toString();
         else
             return false;
 

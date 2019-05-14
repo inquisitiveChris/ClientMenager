@@ -8,14 +8,18 @@ AddPolicyDialog::AddPolicyDialog(QWidget *parent)
     typeLabel = new QLabel("Rodzaj ubezpieczenia");
     companyLabel = new QLabel("Firma ubezpieczeniowa");
     numLabel = new QLabel("Numer polisy");
-    periodLabel = new QLabel("Okres ochrony");
     okButton = new QPushButton("OK");
     cancelButton = new QPushButton("Cancel");
 
     typeText = new QLineEdit;
     companyText = new QLineEdit;
     numText = new QLineEdit;
-    periodText = new QLineEdit;
+
+    periodLabelBegin = new QLabel("Ochrona od:");
+    periodLabelEnd = new QLabel("Ochrona do:");
+
+    periodBeginDate = new QDateEdit;
+    periodEndDate = new QDateEdit;
 
     QGridLayout *gLayout = new QGridLayout;
     gLayout->setColumnStretch(1, 2);
@@ -28,14 +32,16 @@ AddPolicyDialog::AddPolicyDialog(QWidget *parent)
     gLayout->addWidget(numLabel, 2, 0, Qt::AlignLeft|Qt::AlignTop);
     gLayout->addWidget(numText, 2, 1, Qt::AlignLeft);
 
-    gLayout->addWidget(periodLabel, 3, 0);
-    gLayout->addWidget(periodText, 3, 1);
+    gLayout->addWidget(periodLabelBegin, 3, 0);
+    gLayout->addWidget(periodBeginDate, 3, 1);
+    gLayout->addWidget(periodLabelEnd, 4, 0);
+    gLayout->addWidget(periodEndDate, 4, 1);
 
     QHBoxLayout *buttonLayout = new QHBoxLayout;
     buttonLayout->addWidget(okButton);
     buttonLayout->addWidget(cancelButton);
 
-    gLayout->addLayout(buttonLayout, 4, 1, Qt::AlignRight);
+    gLayout->addLayout(buttonLayout, 5, 1, Qt::AlignRight);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addLayout(gLayout);

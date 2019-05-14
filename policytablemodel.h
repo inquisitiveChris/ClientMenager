@@ -10,19 +10,21 @@ struct Policy
     QString type;
     QString company;
     QString num;
-    QString period;
+    QString period_from;
+    QString period_to;
 
     bool operator==(const Policy &other) const
     {
         return type == other.type && company == other.company
-               && num == other.num && period == other.period;
+               && num == other.num && period_from == other.period_from
+               && period_to == other.period_to;
     }
 };
 
 inline QDataStream &operator<<(QDataStream &stream, const Policy &policy)
 {
     return stream << enc(policy.type) << enc(policy.company)
-                  << enc(policy.num) << enc(policy.period);
+                  << enc(policy.num) << enc(policy.period_from) << enc(policy.period_to);
 }
 
 inline QDataStream &operator>>(QDataStream &stream, Policy &policy)
@@ -32,11 +34,12 @@ inline QDataStream &operator>>(QDataStream &stream, Policy &policy)
 
     QDataStream &st =
         stream >> epolicy.type >> epolicy.company >>
-                  epolicy.num >> epolicy.period;
+                  epolicy.num >> epolicy.period_from >> epolicy.period_to;
     policy.type = dec(epolicy.type);
     policy.company = dec(epolicy.company);
     policy.num = dec(epolicy.num);
-    policy.period = dec(epolicy.period);
+    policy.period_from = dec(epolicy.period_from);
+    policy.period_to = dec(epolicy.period_to);
 
     return st;
  }

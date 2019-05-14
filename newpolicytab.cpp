@@ -28,8 +28,9 @@ void NewPolicyTab::addEntry()
         QString type = aDialog.typeText->text();
         QString company = aDialog.companyText->text();
         QString num = aDialog.numText->text();
-        QString period = aDialog.periodText->text();
+        QString period_from = aDialog.periodBeginDate->text();
+        QString period_to = aDialog.periodEndDate->text();
 
-        emit sendDetails(type, company, num, period);
+        emit sendDetails(type, company, num, period_from, period_to);
     }
 }

@@ -24,7 +24,7 @@ public:
 
 public slots:
     void showAddEntryDialog();
-    void addEntry(QString type, QString company, QString num, QString period);
+    void addEntry(QString type, QString company, QString num, QString period_from, QString period_to);
     void editEntry();
     void removeEntry();
 

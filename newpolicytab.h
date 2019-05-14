@@ -19,7 +19,7 @@ public slots:
     void addEntry();
 
 signals:
-    void sendDetails(QString type, QString company, QString num, QString period);
+    void sendDetails(QString type, QString company, QString num, QString period_from, QString period_to);
 
 private:
     QLabel *descriptionLabel;

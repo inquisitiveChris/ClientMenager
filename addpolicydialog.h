@@ -7,6 +7,7 @@ QT_BEGIN_NAMESPACE
 class QLabel;
 class QPushButton;
 class QLineEdit;
+class QDateEdit;
 QT_END_NAMESPACE
 
 class AddPolicyDialog : public QDialog
@@ -17,13 +18,16 @@ public:
     QLineEdit *typeText;
     QLineEdit *companyText;
     QLineEdit *numText;
-    QLineEdit *periodText;
+    QDateEdit *periodEndDate;
+    QDateEdit *periodBeginDate;
 
 private:
     QLabel *typeLabel;
     QLabel *companyLabel;
     QLabel *numLabel;
-    QLabel *periodLabel;
+    QLabel *periodLabelBegin;
+    QLabel *periodLabelEnd;
+
     QPushButton *okButton;
     QPushButton *cancelButton;
 };
