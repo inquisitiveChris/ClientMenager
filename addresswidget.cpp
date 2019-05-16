@@ -286,7 +286,7 @@ void AddressWidget::setupTabs()
         tableView->setModel(proxyModel);
 
         tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-        tableView->horizontalHeader()->setStretchLastSection(true);
+        tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
         tableView->verticalHeader()->hide();
         tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
         tableView->setSelectionMode(QAbstractItemView::SingleSelection);

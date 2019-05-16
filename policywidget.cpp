@@ -3,6 +3,7 @@
 #include "mainwindow.h"
 
 #include <QtWidgets>
+#include <QHeaderView>
 
 extern MainWindow * getMainWindow();
 
@@ -28,16 +29,20 @@ void PolicyWidget::showAddEntryDialog()
         QString type = aDialog.typeText->text();
         QString company = aDialog.companyText->text();
         QString num = aDialog.numText->text();
+        QString client_id = aDialog.client_idText->text();
         QString period_from = aDialog.periodBeginDate->date().toString();
         QString period_to = aDialog.periodEndDate->date().toString();
+        QString payment_from = aDialog.payment_fromText->text();
 
     if(type.length() > 0)
-        addEntry(type, company, num, period_from, period_to);
+        addEntry(type, company, num, period_from, period_to, client_id, payment_from);
     }
 }
-void PolicyWidget::addEntry(QString type, QString company, QString num, QString period_from, QString period_to)
+void PolicyWidget::addEntry(QString type, QString company, QString num, QString period_from, QString period_to,
+                            QString client_id, QString payment_from)
 {
-    if (!table->getPolicies().contains({ type, company, num, period_from, period_to })) {
+    if (!table->getPolicies().contains({ type, company, num, period_from, period_to,
+                                         client_id, payment_from})) {
         table->insertRows(0, 1, QModelIndex());
 
         QModelIndex index = table->index(0, 0, QModelIndex());
@@ -50,6 +55,10 @@ void PolicyWidget::addEntry(QString type, QString company, QString num, QString 
         table->setData(index, period_from, Qt::EditRole);
         index = table->index(0, 4, QModelIndex());
         table->setData(index, period_to, Qt::EditRole);
+        index = table->index(0, 5, QModelIndex());
+        table->setData(index, client_id, Qt::EditRole);
+        index = table->index(0, 6, QModelIndex());
+        table->setData(index, payment_from, Qt::EditRole);
         /* poinformuj MainWindow że dane zostały zmienione */
         getMainWindow()->setModified(true);
     } else {
@@ -69,6 +78,8 @@ void PolicyWidget::editEntry()
     QString num;
     QString period_from;
     QString period_to;
+    QString client_id;
+    QString payment_from;
 
     int row = -1;
 
@@ -93,6 +104,14 @@ void PolicyWidget::editEntry()
         QModelIndex period_toIndex = table->index(row, 4, QModelIndex());
         QVariant varPeriod_to = table->data(period_toIndex, Qt::DisplayRole);
         period_to = varPeriod_to.toString();
+
+        QModelIndex client_idIndex = table->index(row, 5, QModelIndex());
+        QVariant varClient_id = table->data(client_idIndex, Qt::DisplayRole);
+        client_id = varClient_id.toString();
+
+        QModelIndex payment_fromIndex = table->index(row, 6, QModelIndex());
+        QVariant varPayment_from = table->data(payment_fromIndex, Qt::DisplayRole);
+        payment_from = varPayment_from.toString();
     }
 //! [4a]
 
@@ -106,8 +125,8 @@ void PolicyWidget::editEntry()
     QDate date = QDate::currentDate();
     aDialog.periodBeginDate->setDate(/*period_from*/ date);
     aDialog.periodEndDate->setDate(/*period_to*/ date);
-
-
+    aDialog.client_idText->setText(client_id);
+    aDialog.payment_fromText->setText(payment_from);
 
     if (aDialog.exec()) {
         bool policyModified = false;
@@ -140,6 +159,18 @@ void PolicyWidget::editEntry()
              policyModified = true;
             QModelIndex index = table->index(row, 4, QModelIndex());
             table->setData(index, newPeriod_to, Qt::EditRole);
+         }
+        QString newClient_id = aDialog.client_idText->text();
+        if (newClient_id != client_id) {
+             policyModified = true;
+            QModelIndex index = table->index(row, 5, QModelIndex());
+            table->setData(index, newClient_id, Qt::EditRole);
+         }
+        QString newPayment_from = aDialog.payment_fromText->text();
+        if (newPayment_from != payment_from) {
+             policyModified = true;
+            QModelIndex index = table->index(row, 6, QModelIndex());
+            table->setData(index, newPayment_from, Qt::EditRole);
          }
 
          if(policyModified == true) {
@@ -182,7 +213,7 @@ void PolicyWidget::setupTabs()
         tableView->setModel(proxyModel);
 
         tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-        tableView->horizontalHeader()->setStretchLastSection(true);
+        tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
         tableView->verticalHeader()->hide();
         tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
         tableView->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -222,7 +253,7 @@ void PolicyWidget::readFromFile(const QString &fileName)
                                  tr("Plik który próbujesz otworzyć nie zawiera polis."));
     } else {
         for (const auto &policy: qAsConst(policies))
-            addEntry(policy.type, policy.company, policy.num, policy.period_from, policy.period_to);
+            addEntry(policy.type, policy.company, policy.num, policy.period_from, policy.period_to, policy.client_id, policy.payment_from);
     }
 }
 

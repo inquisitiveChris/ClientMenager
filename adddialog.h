@@ -74,6 +74,7 @@ public:
     QLineEdit *emailText;
     QLineEdit *nipText;
     QLineEdit *regonText;
+    QLineEdit *client_identityText;
 
 private:
     QLabel *nameLabel;

@@ -18,8 +18,11 @@ public:
     QLineEdit *typeText;
     QLineEdit *companyText;
     QLineEdit *numText;
+    QLineEdit *client_idText;
+    QLineEdit *payment_fromText;
     QDateEdit *periodEndDate;
     QDateEdit *periodBeginDate;
+
 
 private:
     QLabel *typeLabel;
@@ -27,6 +30,8 @@ private:
     QLabel *numLabel;
     QLabel *periodLabelBegin;
     QLabel *periodLabelEnd;
+    QLabel *clientLabelid;
+    QLabel *paymentLabelFrom;
 
     QPushButton *okButton;
     QPushButton *cancelButton;

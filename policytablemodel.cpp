@@ -20,7 +20,7 @@ int PolicyTableModel::rowCount(const QModelIndex &parent) const
 int PolicyTableModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return 6;
+    return 7;
 }
 QVariant PolicyTableModel::data(const QModelIndex &index, int role) const
 {
@@ -43,6 +43,10 @@ QVariant PolicyTableModel::data(const QModelIndex &index, int role) const
             return policy.period_from;
         else if (index.column() == 4)
             return policy.period_to;
+        else if (index.column() == 5)
+            return policy.client_id;
+        else if (index.column() == 6)
+            return policy.payment_from;
     }
     return QVariant();
 }
@@ -54,19 +58,25 @@ QVariant PolicyTableModel::headerData(int section, Qt::Orientation orientation, 
     if (orientation == Qt::Horizontal) {
         switch (section) {
         case 0:
-            return tr("Rodzaj ubezpieczenia");
+            return tr("Rodzaj ubezpieczenia:");
 
         case 1:
-            return tr("Firma ubezpieczeniowa");
+            return tr("Firma ubezpieczeniowa:");
 
         case 2:
-            return tr("Nr polisy");
+            return tr("Nr polisy:");
 
         case 3:
-            return tr("Okres ochrony od");
+            return tr("Okres ochrony od:");
 
         case 4:
-            return tr("Okres ochrony do");
+            return tr("Okres ochrony do:");
+
+        case 5:
+            return tr("Identyfikator klienta:");
+
+        case 6:
+            return tr("Zapłacono:");
 
             default:
                 return QVariant();
@@ -91,7 +101,8 @@ bool PolicyTableModel::insertRows(int position, int rows, const QModelIndex &ind
     beginInsertRows(QModelIndex(), position, position + rows - 1);
 
     for (int row = 0; row < rows; ++row)
-       policies.insert(position, { QString(),QString(), QString(), QString(), QString() });
+       policies.insert(position, { QString(),QString(), QString(), QString(),
+                                   QString(), QString(), QString()});
 
     endInsertRows();
     return true;
@@ -113,6 +124,10 @@ bool PolicyTableModel::setData(const QModelIndex &index, const QVariant &value, 
             policy.period_from = value.toString();
         else if (index.column() == 4)
             policy.period_to = value.toString();
+        else if (index.column() == 5)
+            policy.client_id = value.toString();
+        else if (index.column() == 6)
+            policy.payment_from = value.toString();
         else
             return false;
 
