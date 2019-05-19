@@ -79,6 +79,7 @@ public slots:
     void editEntry();
     void removeEntry();
     void autoSave();
+    TableModel *getTable();
 
 signals:
     void selectionChanged (const QItemSelection &selected);

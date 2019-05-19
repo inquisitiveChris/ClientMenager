@@ -58,6 +58,7 @@
 #include <QListWidget>
 #include <QTextEdit>
 #include <QShowEvent>
+#include <QList>
 
 //! [0]
 class MainWindow : public QMainWindow
@@ -79,6 +80,7 @@ protected:
 public:
     void setModified(bool bModified);
     bool getModified();
+    AddressWidget * getAddressWidget();
 
 private:
     void createMenus();
@@ -102,6 +104,7 @@ private:
     QAction *editPolicyAct;
     QAction *removePolicyAct;
     QTextEdit *textEdit;
+
 };
 //! [0]
 

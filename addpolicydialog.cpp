@@ -24,6 +24,7 @@ AddPolicyDialog::AddPolicyDialog(QWidget *parent)
     cancelButton = new QPushButton("Cancel");
 
     QGridLayout *gLayout = new QGridLayout;
+    gLayout->setProperty("green", 1);
     gLayout->setColumnStretch(1, 2);
     gLayout->addWidget(typeLabel, 0, 0);
     gLayout->addWidget(typeText, 0, 1);

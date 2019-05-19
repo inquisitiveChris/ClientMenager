@@ -21,6 +21,7 @@ public:
     ~PolicyWidget();
     void readFromFile(const QString &fileName);
     void writeToFile(const QString &fileName);
+    //void paintEvent(QPaintEvent *event);
 
 public slots:
     void showAddEntryDialog();

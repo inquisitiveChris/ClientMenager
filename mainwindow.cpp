@@ -236,5 +236,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
 }
 
 //! [5]
+//! [6]
+AddressWidget * MainWindow::getAddressWidget()
+{
+    return addressWidget;
+}
+//! [6]
 
 

@@ -284,6 +284,7 @@ void AddressWidget::setupTabs()
 
         QTableView *tableView = new QTableView;
         tableView->setModel(proxyModel);
+        tableView->setAlternatingRowColors(true);
 
         tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
         tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -327,8 +328,9 @@ void AddressWidget::readFromFile(const QString &fileName)
         QMessageBox::information(this, tr("Brak kontaktów w pliku"),
                                  tr("Plik który próbujesz otworzyć nie zawiera kontaktów."));
     } else {
-        for (const auto &contact: qAsConst(contacts))
+        for (const auto &contact: qAsConst(contacts)) {
             addEntry(contact.name, contact.pesel, contact.address, contact.telefon, contact.email, contact.nip, contact.regon);
+        }
     }
 }
 //! [7]
@@ -390,4 +392,10 @@ void AddressWidget::autoSave()
 
 }
 //! [9]
+//! [10]
+TableModel * AddressWidget::getTable()
+{
+    return table;
+}
+//! [10]
 

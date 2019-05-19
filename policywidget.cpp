@@ -5,6 +5,8 @@
 #include <QtWidgets>
 #include <QHeaderView>
 
+
+
 extern MainWindow * getMainWindow();
 
 PolicyWidget::PolicyWidget(QWidget *parent)
@@ -24,6 +26,14 @@ PolicyWidget::~PolicyWidget()
 void PolicyWidget::showAddEntryDialog()
 {
     AddPolicyDialog aDialog;
+
+    TableModel *table = getMainWindow()->getAddressWidget()->getTable();
+    QList<Contact> contacts = table->getContacts();
+    QMessageBox::information(this, tr("tast uchwytu kontaktow"),
+        tr("liczba kotaktow \"%1\" wynosi").arg(contacts.count()));
+
+
+
 
     if (aDialog.exec()) {
         QString type = aDialog.typeText->text();
@@ -202,6 +212,8 @@ void PolicyWidget::setupTabs()
     QStringList groups;
     groups << "Twoje polisy";
 
+    //tableView->setUpdatesEnabled(false);
+
     for (int i = 0; i < groups.size(); ++i) {
         QString str = groups.at(i);
 
@@ -211,12 +223,14 @@ void PolicyWidget::setupTabs()
 
         QTableView *tableView = new QTableView;
         tableView->setModel(proxyModel);
+        tableView->setAlternatingRowColors(true);
 
         tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
         tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
         tableView->verticalHeader()->hide();
         tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
         tableView->setSelectionMode(QAbstractItemView::SingleSelection);
+        //QListWidgetItem* item = tableView->itemDelegateForColumn(i);
 
         tableView->setSortingEnabled(true);
 

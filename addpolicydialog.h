@@ -8,6 +8,7 @@ class QLabel;
 class QPushButton;
 class QLineEdit;
 class QDateEdit;
+class QPalette;
 QT_END_NAMESPACE
 
 class AddPolicyDialog : public QDialog
@@ -22,7 +23,6 @@ public:
     QLineEdit *payment_fromText;
     QDateEdit *periodEndDate;
     QDateEdit *periodBeginDate;
-
 
 private:
     QLabel *typeLabel;
