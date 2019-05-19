@@ -44,8 +44,8 @@ void PolicyWidget::showAddEntryDialog()
         QString num = aDialog.numText->text();
         // get PESEL attached to selected name
         QString client_id = aDialog.clientId->currentData().toString();
-        QString period_from = aDialog.periodBeginDate->date().toString();
-        QString period_to = aDialog.periodEndDate->date().toString();
+        QString period_from = aDialog.periodBeginDate->date().toString("dd.MM.yyyy");
+        QString period_to = aDialog.periodEndDate->date().toString("dd.MM.yyyy");
         QString payment_from = aDialog.payment_fromText->text();
 
     if(type.length() > 0)
@@ -85,6 +85,10 @@ void PolicyWidget::editEntry()
     QTableView *temp = static_cast<QTableView*>(currentWidget());
     QSortFilterProxyModel *proxy = static_cast<QSortFilterProxyModel*>(temp->model());
     QItemSelectionModel *selectionModel = temp->selectionModel();
+
+   // get access to contacts
+    TableModel *tableC = getMainWindow()->getAddressWidget()->getTable();
+    QList<Contact> contacts = tableC->getContacts();
 
     QModelIndexList indexes = selectionModel->selectedRows();
     QString type;
@@ -131,15 +135,34 @@ void PolicyWidget::editEntry()
 
 //! [4b]
     AddPolicyDialog aDialog;
+
+    int clientIndex = 0;
+    int ci = 0;
+    QDate date;
+
+
     aDialog.setWindowTitle(tr("Edytuj polisę"));
+
+    aDialog.clientId->clear();
+    foreach(Contact con, contacts) {
+        aDialog.clientId->addItem(con.name,con.pesel);
+        if(con.pesel == client_id)
+            clientIndex = ci;
+        ci++;
+    }
+    aDialog.clientId->setCurrentIndex(clientIndex);
 
     aDialog.typeText->setText(type);
     aDialog.companyText->setText(company);
     aDialog.numText->setText(num);
-    QDate date = QDate::currentDate();
-    aDialog.periodBeginDate->setDate(/*period_from*/ date);
-    aDialog.periodEndDate->setDate(/*period_to*/ date);
-    aDialog.client_idText->setText(client_id);
+    //QMessageBox::information(this, period_from,period_to);
+    date = QDate::fromString(period_from,"dd.MM.yyyy");
+    aDialog.periodBeginDate->setDate(date);
+    //QString da = date.toString();
+    date = QDate::fromString(period_to,"dd.MM.yyyy");
+    aDialog.periodEndDate->setDate(date);
+    //QString db = date.toString();
+    //QMessageBox::information(this, da,db);
     aDialog.payment_fromText->setText(payment_from);
 
     if (aDialog.exec()) {
@@ -162,19 +185,19 @@ void PolicyWidget::editEntry()
             QModelIndex index = table->index(row, 2, QModelIndex());
             table->setData(index, newNum, Qt::EditRole);
         }
-        QString newPeriod_from = aDialog.periodBeginDate->date().toString();
+        QString newPeriod_from = aDialog.periodBeginDate->date().toString("dd.MM.yyyy");
         if (newPeriod_from != period_from) {
              policyModified = true;
             QModelIndex index = table->index(row, 3, QModelIndex());
             table->setData(index, newPeriod_from, Qt::EditRole);
         }
-        QString newPeriod_to = aDialog.periodEndDate->date().toString();
+        QString newPeriod_to = aDialog.periodEndDate->date().toString("dd.MM.yyyy");
         if (newPeriod_to != period_to) {
              policyModified = true;
             QModelIndex index = table->index(row, 4, QModelIndex());
             table->setData(index, newPeriod_to, Qt::EditRole);
          }
-        QString newClient_id = aDialog.client_idText->text();
+        QString newClient_id = aDialog.clientId->currentData().toString();
         if (newClient_id != client_id) {
              policyModified = true;
             QModelIndex index = table->index(row, 5, QModelIndex());

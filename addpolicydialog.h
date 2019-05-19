@@ -20,7 +20,7 @@ public:
     QLineEdit *typeText;
     QLineEdit *companyText;
     QLineEdit *numText;
-    QLineEdit *client_idText;
+    QString   clientIdBox;
     QComboBox *clientId;
     QLineEdit *payment_fromText;
     QDateEdit *periodEndDate;

@@ -18,7 +18,6 @@ AddPolicyDialog::AddPolicyDialog(QWidget *parent)
     typeText = new QLineEdit;
     companyText = new QLineEdit;
     numText = new QLineEdit;
-    client_idText = new QLineEdit;
     payment_fromText = new QLineEdit;
     periodBeginDate = new QDateEdit;
     periodEndDate = new QDateEdit;
