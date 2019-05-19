@@ -7,11 +7,13 @@
 
 
 
+
 extern MainWindow * getMainWindow();
 
 PolicyWidget::PolicyWidget(QWidget *parent)
     : QTabWidget (parent)
 {
+
     table = new PolicyTableModel(this);
     setupTabs();
     readFromFile("dbp.abk");
@@ -29,17 +31,19 @@ void PolicyWidget::showAddEntryDialog()
 
     TableModel *table = getMainWindow()->getAddressWidget()->getTable();
     QList<Contact> contacts = table->getContacts();
-    QMessageBox::information(this, tr("tast uchwytu kontaktow"),
-        tr("liczba kotaktow \"%1\" wynosi").arg(contacts.count()));
+    //QMessageBox::information(this, tr("tast uchwytu kontaktow"),
+        //tr("liczba kotaktow \"%1\" wynosi").arg(contacts.count()));
 
-
-
+    foreach(Contact con, contacts) {
+        aDialog.clientId->addItem(con.name,con.pesel);
+    }
 
     if (aDialog.exec()) {
         QString type = aDialog.typeText->text();
         QString company = aDialog.companyText->text();
         QString num = aDialog.numText->text();
-        QString client_id = aDialog.client_idText->text();
+        // get PESEL attached to selected name
+        QString client_id = aDialog.clientId->currentData().toString();
         QString period_from = aDialog.periodBeginDate->date().toString();
         QString period_to = aDialog.periodEndDate->date().toString();
         QString payment_from = aDialog.payment_fromText->text();

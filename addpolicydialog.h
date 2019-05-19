@@ -9,6 +9,7 @@ class QPushButton;
 class QLineEdit;
 class QDateEdit;
 class QPalette;
+class QComboBox;
 QT_END_NAMESPACE
 
 class AddPolicyDialog : public QDialog
@@ -20,6 +21,7 @@ public:
     QLineEdit *companyText;
     QLineEdit *numText;
     QLineEdit *client_idText;
+    QComboBox *clientId;
     QLineEdit *payment_fromText;
     QDateEdit *periodEndDate;
     QDateEdit *periodBeginDate;
