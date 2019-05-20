@@ -12,13 +12,13 @@ AddPolicyDialog::AddPolicyDialog(QWidget *parent)
     periodLabelBegin = new QLabel("Ochrona od:");
     periodLabelEnd = new QLabel("Ochrona do:");
     clientLabelid = new QLabel ("Identyfikator klienta:");
-    paymentLabelFrom = new QLabel ("Zapłacono:");
+    paymentLabel = new QLabel ("Zapłacono:");
 
     clientId = new QComboBox;
+    paymentBox = new QComboBox;
     typeText = new QLineEdit;
     companyText = new QLineEdit;
     numText = new QLineEdit;
-    payment_fromText = new QLineEdit;
     periodBeginDate = new QDateEdit;
     periodEndDate = new QDateEdit;
     okButton = new QPushButton("OK");
@@ -45,8 +45,8 @@ AddPolicyDialog::AddPolicyDialog(QWidget *parent)
     gLayout->addWidget(periodLabelEnd, 5, 0);
     gLayout->addWidget(periodEndDate, 5, 1);
 
-    gLayout->addWidget(paymentLabelFrom, 6, 0);
-    gLayout->addWidget(payment_fromText, 6, 1);
+    gLayout->addWidget(paymentLabel, 6, 0);
+    gLayout->addWidget(paymentBox, 6, 1);
 
     QHBoxLayout *buttonLayout = new QHBoxLayout;
     buttonLayout->addWidget(okButton);

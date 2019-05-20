@@ -22,7 +22,7 @@ public:
     QLineEdit *numText;
     QString   clientIdBox;
     QComboBox *clientId;
-    QLineEdit *payment_fromText;
+    QComboBox *paymentBox;
     QDateEdit *periodEndDate;
     QDateEdit *periodBeginDate;
 
@@ -33,7 +33,7 @@ private:
     QLabel *periodLabelBegin;
     QLabel *periodLabelEnd;
     QLabel *clientLabelid;
-    QLabel *paymentLabelFrom;
+    QLabel *paymentLabel;
 
     QPushButton *okButton;
     QPushButton *cancelButton;

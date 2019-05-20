@@ -31,7 +31,7 @@ void NewPolicyTab::addEntry()
         QString period_from = aDialog.periodBeginDate->text();
         QString period_to = aDialog.periodEndDate->text();
         QString client_id = aDialog.clientId->currentData().toString();
-        QString payment_from = aDialog.payment_fromText->text();
-        emit sendDetails(type, company, num, period_from, period_to, client_id, payment_from);
+        QString payment = aDialog.paymentBox->currentData().toString();
+        emit sendDetails(type, company, num, period_from, period_to, client_id, payment);
     }
 }
