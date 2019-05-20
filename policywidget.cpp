@@ -5,9 +5,6 @@
 #include <QtWidgets>
 #include <QHeaderView>
 
-
-
-
 extern MainWindow * getMainWindow();
 
 PolicyWidget::PolicyWidget(QWidget *parent)
@@ -31,12 +28,13 @@ void PolicyWidget::showAddEntryDialog()
 
     TableModel *table = getMainWindow()->getAddressWidget()->getTable();
     QList<Contact> contacts = table->getContacts();
-    //QMessageBox::information(this, tr("tast uchwytu kontaktow"),
-        //tr("liczba kotaktow \"%1\" wynosi").arg(contacts.count()));
 
     foreach(Contact con, contacts) {
         aDialog.clientId->addItem(con.name,con.pesel);
     }
+
+    aDialog.paymentBox->addItem("Tak");
+    aDialog.paymentBox->addItem("Nie");
 
     if (aDialog.exec()) {
         QString type = aDialog.typeText->text();
@@ -46,17 +44,17 @@ void PolicyWidget::showAddEntryDialog()
         QString client_id = aDialog.clientId->currentData().toString();
         QString period_from = aDialog.periodBeginDate->date().toString("dd.MM.yyyy");
         QString period_to = aDialog.periodEndDate->date().toString("dd.MM.yyyy");
-        QString payment = aDialog.paymentBox->currentData().toString();
+        QString payment = aDialog.paymentBox->currentText();
 
     if(type.length() > 0)
         addEntry(type, company, num, period_from, period_to, client_id, payment);
     }
 }
 void PolicyWidget::addEntry(QString type, QString company, QString num, QString period_from, QString period_to,
-                            QString client_id, QString payment_from)
+                            QString client_id, QString payment)
 {
     if (!table->getPolicies().contains({ type, company, num, period_from, period_to,
-                                         client_id, payment_from})) {
+                                         client_id, payment})) {
         table->insertRows(0, 1, QModelIndex());
 
         QModelIndex index = table->index(0, 0, QModelIndex());
@@ -72,7 +70,7 @@ void PolicyWidget::addEntry(QString type, QString company, QString num, QString 
         index = table->index(0, 5, QModelIndex());
         table->setData(index, client_id, Qt::EditRole);
         index = table->index(0, 6, QModelIndex());
-        table->setData(index, payment_from, Qt::EditRole);
+        table->setData(index, payment, Qt::EditRole);
         /* poinformuj MainWindow że dane zostały zmienione */
         getMainWindow()->setModified(true);
     } else {
@@ -97,7 +95,7 @@ void PolicyWidget::editEntry()
     QString period_from;
     QString period_to;
     QString client_id;
-    QString payment_from;
+    QString payment;
 
     int row = -1;
 
@@ -127,9 +125,9 @@ void PolicyWidget::editEntry()
         QVariant varClient_id = table->data(client_idIndex, Qt::DisplayRole);
         client_id = varClient_id.toString();
 
-        QModelIndex payment_fromIndex = table->index(row, 6, QModelIndex());
-        QVariant varPayment_from = table->data(payment_fromIndex, Qt::DisplayRole);
-        payment_from = varPayment_from.toString();
+        QModelIndex paymentIndex = table->index(row, 6, QModelIndex());
+        QVariant varPayment = table->data(paymentIndex, Qt::DisplayRole);
+        payment = varPayment.toString();
     }
 //! [4a]
 
@@ -150,20 +148,19 @@ void PolicyWidget::editEntry()
             clientIndex = ci;
         ci++;
     }
+
     aDialog.clientId->setCurrentIndex(clientIndex);
+
+    aDialog.paymentBox->addItem("Tak");
+    aDialog.paymentBox->addItem("Nie");
 
     aDialog.typeText->setText(type);
     aDialog.companyText->setText(company);
     aDialog.numText->setText(num);
-    //QMessageBox::information(this, period_from,period_to);
     date = QDate::fromString(period_from,"dd.MM.yyyy");
     aDialog.periodBeginDate->setDate(date);
-    //QString da = date.toString();
     date = QDate::fromString(period_to,"dd.MM.yyyy");
     aDialog.periodEndDate->setDate(date);
-    //QString db = date.toString();
-    //QMessageBox::information(this, da,db);
-    //aDialog.payment->setText(payment_from);
 
     if (aDialog.exec()) {
         bool policyModified = false;
@@ -203,8 +200,8 @@ void PolicyWidget::editEntry()
             QModelIndex index = table->index(row, 5, QModelIndex());
             table->setData(index, newClient_id, Qt::EditRole);
          }
-        QString newPayment = aDialog.paymentBox->currentData().toString();
-        if (newPayment != payment_from) {
+        QString newPayment = aDialog.paymentBox->currentText();
+        if (newPayment != payment) {
              policyModified = true;
             QModelIndex index = table->index(row, 6, QModelIndex());
             table->setData(index, newPayment, Qt::EditRole);
@@ -239,8 +236,6 @@ void PolicyWidget::setupTabs()
     QStringList groups;
     groups << "Twoje polisy";
 
-    //tableView->setUpdatesEnabled(false);
-
     for (int i = 0; i < groups.size(); ++i) {
         QString str = groups.at(i);
 
@@ -257,7 +252,6 @@ void PolicyWidget::setupTabs()
         tableView->verticalHeader()->hide();
         tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
         tableView->setSelectionMode(QAbstractItemView::SingleSelection);
-        //QListWidgetItem* item = tableView->itemDelegateForColumn(i);
 
         tableView->setSortingEnabled(true);
 

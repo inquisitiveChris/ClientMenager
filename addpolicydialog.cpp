@@ -26,7 +26,6 @@ AddPolicyDialog::AddPolicyDialog(QWidget *parent)
 
     QGridLayout *gLayout = new QGridLayout;
 
-
     gLayout->setColumnStretch(1, 2);
     gLayout->addWidget(clientLabelid, 0,0);
     gLayout->addWidget(clientId, 0,1);
